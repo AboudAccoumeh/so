@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title></title>
+<style type="text/css">
+body{
+margin:0;
+padding:0;
+display:flex;
+align-items:center;
+justify-content:center;
+background:#ccc;
+min-height:100vh;
+}
+canvas{
+background:skyblue;
+}
+</style>
+</head>
+<body>
+<canvas width="300" height="300" id="canvas"></canvas>
+<script type="text/javascript">
+var c = document.getElementById("canvas");
+var ctx = c.getContext("2d");
+
+function mine(rect,angle){ 
+	/* rect is object like this {x:number,y:number,width:number,height:number} */
+	/* angle is an angle(number) between -Math.PI and Math.PI (in radians) */
+	if(angle==0){
+		return{
+			x:rect.x+rect.width,
+			y:rect.y+rect.height/2
+		}
+	}
+	/* cp is the center point of the rectangle */
+	var cp = { 
+		x:rect.x + rect.width/2,
+		y:rect.y + rect.height/2
+	};
+	
+	/*dp is the point of the top right diagonal of the rectangle*/
+	var dp = {
+		x:rect.x + rect.width,
+		y:rect.y
+	}
+	
+	var dx = dp.x - cp.x;	//distanceX between dp and cp
+	var dy = dp.y - cp.y;	//distanceY between dp and cp
+	
+	/* calculate the angle of diagonal then abs the angle*/
+	var diagonalAngle = Math.abs(Math.atan2(dy,dx)); // now we can know from which side the edgePoint is
+	
+	var distanceX;
+	var distanceY;
+	var signX;	//a vector
+	var signY = Math.abs(angle) / angle;	//a vector
+	angle = Math.abs(angle);
+	if(angle<=Math.PI/2){ //that means that the edge point is somewhere on the half right side of the rectangle
+		signX = 1;
+		if(angle<diagonalAngle){ //the edge point is on the right side of the rectangle
+			distanceX = rect.width/2; // this number is the adjacent of the right triangle
+			var distance = distanceX/Math.cos(angle); // this number is the hypotenuse width of the right triangle. it is calulated using: cos(angle) = opposite / hypothenuse then hyp = opposite / cos(angle)
+			distanceY = Math.sqrt(distance*distance - distanceX*distanceX); // theorem of pythagoras
+		}
+		else{ //the edge point is on the top or the bottom of the rectangle
+			distanceY = rect.height/2;
+			var distance = distanceY/Math.sin(angle); // this number is the hypotenuse width of the right triangle. it is calulated using: sin(angle) = opposite / hypothenuse then hyp = opposite / sin(angle)
+			distanceX = Math.sqrt(distance*distance - distanceY*distanceY);
+		}
+	}
+	else{ //that means that the edge point is somewhere on the half left side of the rectangle
+		signX = -1;
+		var angle2 = Math.PI - angle;
+		if(angle2<diagonalAngle){//the edge point is on the left side of the rectangle
+			distanceX = rect.width/2;
+			var distance = distanceX/Math.cos(angle);
+			distanceY = Math.sqrt(distance*distance - distanceX*distanceX);
+		}
+		else{// the edge point is somewhere on the top or on the bottom
+			distanceY = rect.height/2;
+			var distance = distanceY/Math.sin(angle);
+			distanceX = Math.sqrt(distance*distance - distanceY*distanceY);
+		}
+	}
+	return {
+		x:cp.x+distanceX*signX,
+		y:cp.y+distanceY*signY
+	};
+	/*ABOUD*/
+}
+
+var rect = {
+	x:50,
+	y:100,
+	width:200,
+	height:100,
+}
+var angle = 0;
+setTimeout(()=>0,5000);
+window.addEventListener("touchstart",function(e){
+	var x = e.touches[0].clientX-c.offsetLeft;
+	var y = e.touches[0].clientY-c.offsetTop;
+	var cp = { 
+		x:rect.x + rect.width/2,
+		y:rect.y + rect.height/2
+	};
+	var dx = x - cp.x;
+	var dy = y - cp.y;
+	angle = Math.atan2(dy,dx);
+});
+window.addEventListener("touchmove",function(e){
+	var x = e.touches[0].clientX-c.offsetLeft;
+	var y = e.touches[0].clientY-c.offsetTop;
+	var cp = { 
+		x:rect.x + rect.width/2,
+		y:rect.y + rect.height/2
+	};
+	var dx = x - cp.x;
+	var dy = y - cp.y;
+	angle = Math.atan2(dy,dx);
+});
+window.addEventListener("mousemove",function(e){
+	var x = e.clientX-c.offsetLeft;
+	var y = e.clientY-c.offsetTop;
+	var cp = { 
+		x:rect.x + rect.width/2,
+		y:rect.y + rect.height/2
+	};
+	var dx = x - cp.x;
+	var dy = y - cp.y;
+	angle = Math.atan2(dy,dx);
+});
+
+function loop(){
+	var edgePoint = mine(rect,angle); // testing my function
+	ctx.clearRect(0,0,1000,1000);
+	ctx.lineWidth = 3;
+	ctx.strokeRect(rect.x,rect.y,rect.width,rect.height);
+	ctx.beginPath();
+	ctx.arc(edgePoint.x,edgePoint.y,8,0,2*Math.PI);
+	ctx.fill();
+	ctx.beginPath();
+	ctx.moveTo(rect.x+rect.width/2,rect.y+rect.height/2);
+	ctx.lineTo(edgePoint.x,edgePoint.y);
+	ctx.stroke();
+	ctx.closePath();
+	requestAnimationFrame(loop);
+}
+
+loop();
+</script>
+</body>
+</html>
