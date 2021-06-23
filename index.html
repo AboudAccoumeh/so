@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title></title>
+<title>trying my function</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
 <style type="text/css">
 body{
 margin:0;
@@ -18,7 +19,7 @@ background:skyblue;
 </style>
 </head>
 <body>
-<canvas width="300" height="300" id="canvas"></canvas>
+<canvas width="400" height="400" id="canvas"></canvas>
 <script type="text/javascript">
 var c = document.getElementById("canvas");
 var ctx = c.getContext("2d");
@@ -90,8 +91,8 @@ function mine(rect,angle){
 }
 
 var rect = {
-	x:50,
-	y:100,
+	x:100,
+	y:150,
 	width:200,
 	height:100,
 }
@@ -114,7 +115,7 @@ function userEvents(x,y){
 
 function loop(){
 	var edgePoint = mine(rect,angle); // testing my function
-	ctx.clearRect(0,0,1000,1000);
+	ctx.clearRect(0,0,c.width,c.height);
 	ctx.lineWidth = 3;
 	ctx.strokeRect(rect.x,rect.y,rect.width,rect.height);
 	ctx.beginPath();
