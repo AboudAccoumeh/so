@@ -96,10 +96,13 @@ var rect = {
 	height:100,
 }
 var angle = 0;
-setTimeout(()=>0,5000);
-window.addEventListener("touchstart",function(e){
-	var x = e.touches[0].clientX-c.offsetLeft;
-	var y = e.touches[0].clientY-c.offsetTop;
+window.addEventListener("touchstart",function(e){userEvents(e.touches[0].clientX,e.touches[0].clientY)});
+window.addEventListener("touchmove",function(e){userEvents(e.touches[0].clientX,e.touches[0].clientY)});
+window.addEventListener("mousemove",function(e){userEvents(e.clientX,e.clientY)});
+
+function userEvents(x,y){
+	x -= c.offsetLeft;
+	y -= c.offsetTop;
 	var cp = { 
 		x:rect.x + rect.width/2,
 		y:rect.y + rect.height/2
@@ -107,29 +110,7 @@ window.addEventListener("touchstart",function(e){
 	var dx = x - cp.x;
 	var dy = y - cp.y;
 	angle = Math.atan2(dy,dx);
-});
-window.addEventListener("touchmove",function(e){
-	var x = e.touches[0].clientX-c.offsetLeft;
-	var y = e.touches[0].clientY-c.offsetTop;
-	var cp = { 
-		x:rect.x + rect.width/2,
-		y:rect.y + rect.height/2
-	};
-	var dx = x - cp.x;
-	var dy = y - cp.y;
-	angle = Math.atan2(dy,dx);
-});
-window.addEventListener("mousemove",function(e){
-	var x = e.clientX-c.offsetLeft;
-	var y = e.clientY-c.offsetTop;
-	var cp = { 
-		x:rect.x + rect.width/2,
-		y:rect.y + rect.height/2
-	};
-	var dx = x - cp.x;
-	var dy = y - cp.y;
-	angle = Math.atan2(dy,dx);
-});
+}
 
 function loop(){
 	var edgePoint = mine(rect,angle); // testing my function
